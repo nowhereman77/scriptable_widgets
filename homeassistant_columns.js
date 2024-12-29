@@ -12,7 +12,7 @@ Home Assistant: https://www.home-assistant.io
 
 This software is released to the PUBLIC DOMAIN
 without warranty of any kind. You are free to modify
-and distribuute it as you like.
+and distribute it as you like.
 
 ***************************************************/
 
@@ -30,6 +30,7 @@ background_color = new Color('#03a9f4');
 title_color = Color.black();
 label_color = Color.black();
 value_color = Color.white();
+value_color_on = Color.red(); // for entities with on/off state
 
 font_size = 16;
 
@@ -127,8 +128,11 @@ for(i = 0; i < num_items; i++){ // for each entity we're interersted in
 
     // add the value to the widget
     mytext = valueStack.addText(value_str);
-    mytext.font = Font.regularSystemFont(font_size);
-    mytext.textColor = value_color;
+    mytext.font = Font.semiboldSystemFont(font_size);
+    if(value_color_on != null && json['state'] == 'on')
+        mytext.textColor = value_color_on;
+    else
+        mytext.textColor = value_color;
 }
 
 // if we're not on the home screen, show a preview
