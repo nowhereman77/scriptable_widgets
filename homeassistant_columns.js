@@ -88,10 +88,8 @@ for(i = 0; i < num_items; i++){ // for each entity we're interersted in
     // if this is the first item of a new column
     // add the necessary widget bits for the new column
     if(i % num_items_per_col == 0){
-        labelStack = bodyStack.addStack();
-        labelStack.layoutVertically();
-        valueStack = bodyStack.addStack();
-		valueStack.layoutVertically();
+        columnStack = bodyStack.addStack();
+        columnStack.layoutVertically();
     }
 
     // build the label string for the entity
@@ -104,9 +102,8 @@ for(i = 0; i < num_items; i++){ // for each entity we're interersted in
         label_str = json['entity_id'];
 
     // add the label to the widget
-    horizStack = labelStack.addStack();
+    horizStack = columnStack.addStack();
     horizStack.layoutHorizontally();
-    horizStack.addSpacer(); // needed to make the label appear right aligned
     mytext = horizStack.addText(label_str);
     mytext.font = Font.boldSystemFont(font_size);
     mytext.textColor = label_color;
@@ -127,8 +124,9 @@ for(i = 0; i < num_items; i++){ // for each entity we're interersted in
 	    value_str += ' ' + json['attributes']['unit_of_measurement'];
 
     // add the value to the widget
-    mytext = valueStack.addText(value_str);
-    mytext.font = Font.semiboldSystemFont(font_size);
+    horizStack.addSpacer(); // needed to make the value appear right aligned
+    mytext = horizStack.addText(value_str);
+    mytext.font = Font.semiboldMonospacedSystemFont(font_size);
     if(value_color_on != null && json['state'] == 'on')
         mytext.textColor = value_color_on;
     else
