@@ -47,6 +47,9 @@ labels = ['Target',null,'Outside','Gate'];
 // number of entities to be displayed in each column of the widget
 num_items_per_col = 4;
 
+// whether to draw darkened "wells" for each column
+draw_col_background = true;
+
 /**************************************************
 END CONFIG
 For basic use, you should not need to change anything blow this point
@@ -55,6 +58,8 @@ For basic use, you should not need to change anything blow this point
 // start building the widget
 widget = new ListWidget();
 widget.backgroundColor = background_color;
+widget.setPadding(5,5,5,5);
+
 // add the header
 if( title != null ){
     headerStack = widget.addStack();
@@ -70,8 +75,7 @@ if( title != null ){
 // add a body to be populated later with Home Assistant data
 bodyStack = widget.addStack();
 bodyStack.layoutHorizontally();
-bodyStack.spacing = 10;
-bodyStack.setPadding(10,0,0,0);
+bodyStack.spacing = 5;
 
 // we can re-use a single request object for all the API calls
 req = new Request('');
@@ -90,6 +94,13 @@ for(i = 0; i < num_items; i++){ // for each entity we're interersted in
     if(i % num_items_per_col == 0){
         columnStack = bodyStack.addStack();
         columnStack.layoutVertically();
+        if(draw_col_background){
+            columnStack.backgroundColor = new Color('#000000', 0.1);
+            columnStack.borderWidth = 5;
+            columnStack.borderColor = new Color('#000000', 0.1);
+            columnStack.cornerRadius = 10;
+        }
+        columnStack.setPadding(10,10,10,10);
     }
 
     // build the label string for the entity
@@ -126,7 +137,7 @@ for(i = 0; i < num_items; i++){ // for each entity we're interersted in
     // add the value to the widget
     horizStack.addSpacer(); // needed to make the value appear right aligned
     mytext = horizStack.addText(value_str);
-    mytext.font = Font.semiboldMonospacedSystemFont(font_size);
+    mytext.font = Font.mediumMonospacedSystemFont(font_size);
     if(value_color_on != null && json['state'] == 'on')
         mytext.textColor = value_color_on;
     else
