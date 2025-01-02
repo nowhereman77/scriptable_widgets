@@ -50,6 +50,11 @@ num_items_per_col = 4;
 // whether to draw darkened "wells" for each column
 draw_col_background = true;
 
+// fonts
+title_font = Font.boldSystemFont(font_size * 1.5);
+label_font = Font.boldSystemFont(font_size);
+value_font = Font.mediumMonospacedSystemFont(font_size);
+
 /**************************************************
 END CONFIG
 For basic use, you should not need to change anything blow this point
@@ -67,7 +72,7 @@ if( title != null ){
     horizStack.layoutHorizontally();
     horizStack.addSpacer(); // needed to make the label appear centered
     titleLabel = horizStack.addText(title);
-    titleLabel.font = Font.boldSystemFont(font_size * 1.5);
+    titleLabel.font = title_font;
     titleLabel.textColor = title_color;
     horizStack.addSpacer(); // needed to make the label appear centered
 }
@@ -100,7 +105,7 @@ for(i = 0; i < num_items; i++){ // for each entity we're interersted in
             columnStack.borderColor = new Color('#000000', 0.1);
             columnStack.cornerRadius = 10;
         }
-        columnStack.setPadding(10,10,10,10);
+        columnStack.setPadding(5,10,5,10);
     }
 
     // build the label string for the entity
@@ -116,7 +121,7 @@ for(i = 0; i < num_items; i++){ // for each entity we're interersted in
     horizStack = columnStack.addStack();
     horizStack.layoutHorizontally();
     mytext = horizStack.addText(label_str);
-    mytext.font = Font.boldSystemFont(font_size);
+    mytext.font = label_font;
     mytext.textColor = label_color;
 
     // build the value string for the entity
@@ -137,11 +142,8 @@ for(i = 0; i < num_items; i++){ // for each entity we're interersted in
     // add the value to the widget
     horizStack.addSpacer(); // needed to make the value appear right aligned
     mytext = horizStack.addText(value_str);
-    mytext.font = Font.mediumMonospacedSystemFont(font_size);
-    if(value_color_on != null && json['state'] == 'on')
-        mytext.textColor = value_color_on;
-    else
-        mytext.textColor = value_color;
+    mytext.font = value_font;
+    mytext.textColor = (value_color_on != null && json['state'] == 'on') ? value_color_on : value_color;
 }
 
 // if we're not on the home screen, show a preview
