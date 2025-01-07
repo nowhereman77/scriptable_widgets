@@ -32,7 +32,10 @@ label_color = Color.black();
 value_color = Color.white();
 value_color_on = Color.red(); // for entities with on/off state
 
-font_size = 16;
+// when true, the value for an entity will be the color
+// returned by Home Assistant. If no color is returned, the widget
+// will use the colors defined above
+use_entity_color = true;
 
 // array of Home Assistant entities to be displayed
 entities = ['input_number.target_temperature','input_number.temp_goal',
@@ -51,9 +54,11 @@ num_items_per_col = 4;
 draw_col_background = true;
 
 // fonts
-title_font = Font.boldSystemFont(font_size * 1.5);
-label_font = Font.boldSystemFont(font_size);
-value_font = Font.mediumMonospacedSystemFont(font_size);
+font_size = 16;
+
+title_font = Font.boldSystemFont(24);
+label_font = new Font('courier', 16); //Font.boldSystemFont(font_size);
+value_font = new Font('courier', 16); //Font.mediumMonospacedSystemFont(font_size);
 
 /**************************************************
 END CONFIG
@@ -143,7 +148,13 @@ for(i = 0; i < num_items; i++){ // for each entity we're interersted in
     horizStack.addSpacer(); // needed to make the value appear right aligned
     mytext = horizStack.addText(value_str);
     mytext.font = value_font;
-    mytext.textColor = (value_color_on != null && json['state'] == 'on') ? value_color_on : value_color;
+    if(use_entity_color && json['attributes']['rgb_color'] != null){
+        hex_str = '#' + json['attributes']['rgb_color'][0].toString(16).padStart(2, '0')
+            + json['attributes']['rgb_color'][1].toString(16).padStart(2, '0')
+            + json['attributes']['rgb_color'][2].toString(16).padStart(2, '0');
+        mytext.textColor = new Color(hex_str);
+    }else
+        mytext.textColor = (value_color_on != null && json['state'] == 'on') ? value_color_on : value_color;
 }
 
 // if we're not on the home screen, show a preview

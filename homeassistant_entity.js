@@ -105,8 +105,6 @@ if(attribute in json){
         str = (str / 2.55).toLocaleString(undefined, { maximumFractionDigits: 0 }) + '%'
 }
 
-console.log(str)
-
 rowStack = widget.addStack();
 rowStack.layoutHorizontally();
 rowStack.addSpacer()
@@ -118,29 +116,32 @@ rowStack.addSpacer()
 widget.addSpacer()
 
 if(secondary_info != null){
+    str = null;
     if(secondary_info in json){
-        str = json[secondary_info]
+        str = json[secondary_info];
         if(secondary_info == 'last_changed' || secondary_info == 'last_updated')
-            str = formatDateString(str)
-    }else{
-        str = json['attributes'][secondary_info]
+            str = formatDateString(str);
+    }else if(secondary_info in json['attributes']){
+        str = json['attributes'][secondary_info];
         if(secondary_info == 'brightness')
-            str = (str / 2.55).toLocaleString(undefined, { maximumFractionDigits: 0 }) + '%'
+            str = (str / 2.55).toLocaleString(undefined, { maximumFractionDigits: 0 }) + '%';
     }
 
-    rowStack = widget.addStack();
-    rowStack.backgroundColor = new Color('#000000', 0.1)
-    rowStack.setPadding(5,10,5,10)
-    rowStack.borderWidth = 5
-    rowStack.borderColor = new Color('#000000', 0.1)
-    rowStack.cornerRadius = 10
+    if(str != null){
+        rowStack = widget.addStack();
+        rowStack.backgroundColor = new Color('#000000', 0.1);
+        rowStack.setPadding(5,10,5,10);
+        rowStack.borderWidth = 5;
+        rowStack.borderColor = new Color('#000000', 0.1);
+        rowStack.cornerRadius = 10;
 
-    rowStack.layoutHorizontally();
-    rowStack.addSpacer()
-    mytext = rowStack.addText(str);
-    mytext.font = Font.regularSystemFont(font_size);
-    mytext.textColor = name_color;
-    rowStack.addSpacer()
+        rowStack.layoutHorizontally();
+        rowStack.addSpacer();
+        mytext = rowStack.addText(str);
+        mytext.font = Font.regularSystemFont(font_size);
+        mytext.textColor = name_color;
+        rowStack.addSpacer();
+    }
 }
 
 // if we're not on the home screen, show a preview
