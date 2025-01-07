@@ -1,6 +1,4 @@
-# scriptable_widgets
-
-A collection of widgets for use with Scriptable on iOS
+# Scriptable Widgets for Home Assistant
 
 ## Columns
 
@@ -13,14 +11,13 @@ A collection of widgets for use with Scriptable on iOS
 
 * A less dense layout than the columns widget
 * Inspired by the Apple Home Accessories widget
-* Entity states can be colored to match Home Assistant
+* Entity states and tile backgrounds can be colored to match Home Assistant
 
 ![image](images/homeassistant_tiles.jpg)
 
 ## Entity
 
-The entity widget displays data for a single Home Assistant entity
-
+* Displays a single entity
 * Supports "secondary info", similar the the Home Assistant Entities card
 * Widget background can be colored to match the entity
 

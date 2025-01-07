@@ -35,10 +35,15 @@ label_color = Color.black();
 value_color = Color.white();
 value_color_on = Color.red(); // for entities with on/off state
 
+// when true, the tile for an entity will be the color
+// returned by Home Assistant. If no color is returned, the tile
+// will not be colored
+use_entity_color_tiles = true;
+
 // when true, the value for an entity will be the color
 // returned by Home Assistant. If no color is returned, the widget
 // will use the colors defined above
-use_entity_color = true;
+use_entity_color_values = false;
 
 // array of Home Assistant entities to be displayed
 entities = ['input_number.target_temperature','input_number.temp_goal',
@@ -99,8 +104,8 @@ for(i = 0; i < num_items; i++){ // for each entity we're interersted in
     // parse the response
     json = await req.loadJSON();
 
-    // if this is the first item of a new column
-    // add the necessary widget bits for the new column
+    // if this is the first item of a new row
+    // add the necessary widget bits for the new row
     if(i % num_items_per_row == 0){
         rowStack = bodyStack.addStack();
         rowStack.layoutHorizontally();
@@ -119,7 +124,10 @@ for(i = 0; i < num_items; i++){ // for each entity we're interersted in
     // add the label to the widget
     itemStack = rowStack.addStack();
     itemStack.layoutVertically();
-    itemStack.backgroundColor = new Color('#ffffff', 0.1);
+    if(use_entity_color_tiles && json['attributes']['rgb_color'] != null){
+        itemStack.backgroundColor = new Color(getHexForColor(json['attributes']['rgb_color']));
+    }else
+	    itemStack.backgroundColor = new Color('#ffffff', 0.1);
     itemStack.borderWidth = 5;
     itemStack.borderColor = new Color('#ffffff', 0.1);
     itemStack.cornerRadius = 10;
@@ -155,11 +163,8 @@ for(i = 0; i < num_items; i++){ // for each entity we're interersted in
     horizStack.addSpacer(); // so text will appear centered
     mytext = horizStack.addText(value_str);
     mytext.font = value_font;
-    if(use_entity_color && json['attributes']['rgb_color'] != null){
-        hex_str = '#' + json['attributes']['rgb_color'][0].toString(16).padStart(2, '0')
-            + json['attributes']['rgb_color'][1].toString(16).padStart(2, '0')
-            + json['attributes']['rgb_color'][2].toString(16).padStart(2, '0');
-        mytext.textColor = new Color(hex_str);
+    if(use_entity_color_values && json['attributes']['rgb_color'] != null){
+        mytext.textColor = new Color(getHexForColor(json['attributes']['rgb_color']));
     }else
         mytext.textColor = (value_color_on != null && json['state'] == 'on') ? value_color_on : value_color;
     horizStack.addSpacer(); // so text will appear centered
@@ -174,3 +179,10 @@ if (!config.runsInWidget) {
 // DONE!
 Script.setWidget(widget);
 Script.complete();
+
+function getHexForColor(rgb_color){
+    result = '#' + rgb_color[0].toString(16).padStart(2, '0')
+        + rgb_color[1].toString(16).padStart(2, '0')
+        + rgb_color[2].toString(16).padStart(2, '0');
+    return result;
+}
