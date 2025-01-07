@@ -11,6 +11,7 @@
 
 * A less dense layout than the columns widget
 * Inspired by the Apple Home Accessories widget
+* Supports "secondary info", similar the the Home Assistant Entities card
 * Entity states and tile backgrounds can be colored to match Home Assistant
 
 ![image](images/homeassistant_tiles.jpg)
