@@ -55,6 +55,15 @@ entities = ['input_number.target_temperature','input_number.temp_goal',
    entity ID will be used as the label */
 labels = ['Target','Goal',null,'Gate'];
 
+// attribute to display as the main value in the widget
+// can be an attribute name or any one of 'state', 'last_changed', or 'last_updated'
+attribute = 'brightness';
+
+// data to be displayed below the main value
+// can be an attribute name or any one of 'state', 'last_changed', or 'last_updated'
+// set to null for nothing to be be rendered below the main value
+secondary_info = null; //'brightness';
+
 // number of entities to be displayed in each row of the widget
 num_items_per_row = 2;
 
@@ -142,20 +151,28 @@ for(i = 0; i < num_items; i++){ // for each entity we're interersted in
     mytext.textColor = label_color;
     horizStack.addSpacer(); // so text will appear centered
 
-    // build the value string for the entity
-    // TODO: add handling for additional device classes
-    if('device_class' in json['attributes']
-        && json['attributes']['device_class'] == 'opening')
-        // if the entity's device class is 'opening'
-        // use "Open" and "Closed" instead of the raw state ("on" and "off")
-        value_str = (json['state'] == 'on') ? 'Open' : 'Closed';
-    else
-        // fall back to the raw state for other entities
-	    value_str = json['state'];
-
-    // if the entity has a unit, use it
-    if('unit_of_measurement' in json['attributes'])
-	    value_str += ' ' + json['attributes']['unit_of_measurement'];
+    if(attribute in json){
+        value_str = json[attribute]
+        if(attribute == 'last_changed' || attribute == 'last_updated')
+            value_str = formatDateString(str)
+        else if(attribute == 'state'){
+            if('device_class' in json['attributes']
+                && json['attributes']['device_class'] == 'opening')
+                // if the entity's device class is 'opening'
+                // use "Open" and "Closed" instead of the raw state ("on" and "off")
+                value_str = (json['state'] == 'on') ? 'Open' : 'Closed';
+            else
+                // fall back to the raw state for other entities
+                value_str = json['state'];
+        }
+        // if the entity has a unit, use it
+        if('unit_of_measurement' in json['attributes'])
+            value_str += ' ' + json['attributes']['unit_of_measurement'];
+    }else{
+        value_str = json['attributes'][attribute]
+        if(attribute == 'brightness')
+            value_str = (value_str / 2.55).toLocaleString(undefined, { maximumFractionDigits: 0 }) + '%'
+    }
 
     // add the value to the widget
     horizStack = itemStack.addStack();
@@ -168,6 +185,29 @@ for(i = 0; i < num_items; i++){ // for each entity we're interersted in
     }else
         mytext.textColor = (value_color_on != null && json['state'] == 'on') ? value_color_on : value_color;
     horizStack.addSpacer(); // so text will appear centered
+
+    if(secondary_info != null){
+        str = null;
+        if(secondary_info in json){
+            str = json[secondary_info];
+            if(secondary_info == 'last_changed' || secondary_info == 'last_updated')
+                str = formatDateString(str);
+        }else if(secondary_info in json['attributes']){
+            str = json['attributes'][secondary_info];
+            if(secondary_info == 'brightness')
+                str = (str / 2.55).toLocaleString(undefined, { maximumFractionDigits: 0 }) + '%';
+        }
+
+        if(str != null){
+            horizStack = itemStack.addStack();
+            horizStack.layoutHorizontally();
+            horizStack.addSpacer();
+            mytext = horizStack.addText(str);
+            mytext.font = Font.regularSystemFont(font_size * 0.75);
+            mytext.textColor = title_color;
+            horizStack.addSpacer();
+        }
+    }
 
     itemStack.addSpacer();
 }
@@ -185,4 +225,16 @@ function getHexForColor(rgb_color){
         + rgb_color[1].toString(16).padStart(2, '0')
         + rgb_color[2].toString(16).padStart(2, '0');
     return result;
+}
+
+function formatDateString(str){
+    // DateFormatter can't handle microseconds, so this is a bit kludgy
+    // assume all HA instances return GMT dates. Unsure if that's really true
+    str = str.split('.')[0] + ' GMT'
+    df = new DateFormatter()
+    df.dateFormat = 'yyyy-MM-dd\'T\'HH:mm:ss zzz'
+    d = df.date(str)
+    df.useShortDateStyle()
+    df.useShortTimeStyle()
+    return df.string(d)
 }
