@@ -23,3 +23,12 @@
 * Widget background can be colored to match the entity
 
 ![image](images/homeassistant_entity.jpg)
+
+## Lock Screen
+
+### Rectangular
+
+* Displays multiple entities
+* Designed to be used as a rectangular lock screen widget
+
+![image](images/homeassistant_lockscreen_rect.jpg)
